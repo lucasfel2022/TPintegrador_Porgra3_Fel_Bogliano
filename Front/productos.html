@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GameZone — Productos</title>
+  <link rel="icon" href="img/favicon.png" type="image/png">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <div class="alumnos-bar">Alumnos: Lucas Fel &amp; [Compañera] — UTN Avellaneda</div>
+
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <span class="logo">🎮</span>
+      <h1>GameZone</h1>
+    </div>
+    <div class="navbar-links">
+      <a href="productos.html" class="nav-link activo">Productos</a>
+      <a href="carrito.html" class="nav-link">
+        Carrito <span id="badge-carrito" class="badge-carrito">0</span>
+      </a>
+      <a href="admin-redirect.html" class="nav-link">Panel Admin</a>
+      <button id="btn-tema" class="btn-tema" title="Cambiar tema">🌙</button>
+    </div>
+  </nav>
+
+  <main class="container">
+    <div class="saludo-cliente">
+      <h2>Hola, <span id="nombre-cliente">Cliente</span> 👋</h2>
+      <p>Elegí tus productos favoritos y agregalos al carrito.</p>
+    </div>
+
+    <div class="categorias-tabs">
+      <button class="tab-categoria activo" data-categoria="todos">Todos</button>
+      <button class="tab-categoria" data-categoria="juegos">🎮 Juegos</button>
+      <button class="tab-categoria" data-categoria="accesorios">🎧 Accesorios</button>
+    </div>
+
+    <div id="grid-productos" class="grid-productos">
+      <!-- Las cards se inyectan por JS -->
+    </div>
+
+    <div id="paginacion" class="paginacion">
+      <!-- Botones de paginación por JS -->
+    </div>
+  </main>
+
+  <footer>GameZone © 2026 — Trabajo Integrador Programación III</footer>
+
+  <!-- Modal cantidad al agregar -->
+  <div class="modal-overlay" id="modal-cantidad">
+    <div class="modal">
+      <h3 id="modal-cantidad-titulo">Agregar al carrito</h3>
+      <p>¿Cuántas unidades querés agregar?</p>
+      <div class="selector-cantidad">
+        <button id="btn-restar" class="btn-cantidad" type="button">−</button>
+        <span id="cantidad-valor">1</span>
+        <button id="btn-sumar" class="btn-cantidad" type="button">+</button>
+      </div>
+      <div class="modal-btns">
+        <button id="btn-confirmar-agregar" class="btn btn-primary">Agregar</button>
+        <button class="btn btn-secondary" onclick="cerrarModalCantidad()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="data/productos.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

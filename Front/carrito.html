@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GameZone — Carrito</title>
+  <link rel="icon" href="img/favicon.png" type="image/png">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <div class="alumnos-bar">Alumnos: Lucas Fel &amp; [Compañera] — UTN Avellaneda</div>
+
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <span class="logo">🎮</span>
+      <h1>GameZone</h1>
+    </div>
+    <div class="navbar-links">
+      <a href="productos.html" class="nav-link">Productos</a>
+      <a href="carrito.html" class="nav-link activo">
+        Carrito <span id="badge-carrito" class="badge-carrito">0</span>
+      </a>
+      <a href="admin-redirect.html" class="nav-link">Panel Admin</a>
+      <button id="btn-tema" class="btn-tema" title="Cambiar tema">🌙</button>
+    </div>
+  </nav>
+
+  <main class="container">
+    <h2 class="titulo-carrito">🛒 Tu carrito</h2>
+
+    <div id="lista-carrito" class="lista-carrito">
+      <!-- Items por JS -->
+    </div>
+
+    <div id="carrito-vacio" class="carrito-vacio" style="display:none">
+      <p>Tu carrito está vacío.</p>
+      <a href="productos.html" class="btn btn-primary">Ver productos</a>
+    </div>
+
+    <div id="resumen-carrito" class="resumen-carrito">
+      <div class="resumen-total">
+        <span>Total</span>
+        <span id="total-carrito">$0</span>
+      </div>
+      <div class="resumen-botones">
+        <a href="productos.html" class="btn btn-secondary">← Seguir comprando</a>
+        <button id="btn-finalizar" class="btn btn-primary">Finalizar compra</button>
+      </div>
+    </div>
+  </main>
+
+  <footer>GameZone © 2026 — Trabajo Integrador Programación III</footer>
+
+  <!-- Modal confirmar compra -->
+  <div class="modal-overlay" id="modal-confirmar">
+    <div class="modal">
+      <h3>¿Confirmar la compra?</h3>
+      <p>Una vez confirmada, se generará tu ticket y no podrás modificar el pedido.</p>
+      <div class="modal-btns">
+        <button id="btn-confirmar-compra" class="btn btn-primary">Sí, confirmar</button>
+        <button class="btn btn-secondary" onclick="cerrarModalConfirmar()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal eliminar item -->
+  <div class="modal-overlay" id="modal-eliminar">
+    <div class="modal">
+      <h3>¿Quitar producto?</h3>
+      <p id="texto-eliminar"></p>
+      <div class="modal-btns">
+        <button id="btn-confirmar-eliminar" class="btn btn-danger">Sí, quitar</button>
+        <button class="btn btn-secondary" onclick="cerrarModalEliminar()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="data/productos.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

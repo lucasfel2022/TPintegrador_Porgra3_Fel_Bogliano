@@ -1,0 +1,83 @@
+<%- include('partials/header', { usuario: 'admin' }) %>
+
+<style>
+  .form-card { background: #1a1a2e; border: 1px solid #7c3aed; border-radius: 12px; padding: 2rem; max-width: 600px; margin: 2rem auto; }
+  h2 { color: #a78bfa; margin-bottom: 1.5rem; }
+  .form-group { margin-bottom: 1.25rem; }
+  label { display: block; margin-bottom: 0.4rem; font-size: 0.9rem; color: #c4b5fd; }
+  input, select, textarea { width: 100%; padding: 0.75rem; border-radius: 8px; border: 1px solid #4c1d95; background: #0f0f1a; color: #e0e0e0; font-size: 1rem; }
+  input:focus, select:focus, textarea:focus { outline: none; border-color: #7c3aed; }
+  textarea { resize: vertical; min-height: 100px; }
+  .btn { padding: 0.75rem 1.5rem; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; text-decoration: none; display: inline-block; }
+  .btn-primary { background: #7c3aed; color: white; }
+  .btn-secondary { background: #374151; color: #d1d5db; }
+  .btn-row { display: flex; gap: 1rem; margin-top: 1rem; }
+  .error { background: #450a0a; color: #fca5a5; padding: 0.75rem; border-radius: 8px; margin-bottom: 1rem; }
+  .img-preview { width: 100px; height: 100px; object-fit: cover; border-radius: 8px; margin-top: 0.5rem; display: block; }
+</style>
+
+<div class="container">
+  <div class="form-card">
+    <h2><%= producto ? '✏️ Editar producto' : '➕ Nuevo producto' %></h2>
+
+    <% if (error) { %>
+      <div class="error"><%= error %></div>
+    <% } %>
+
+    <form method="POST"
+      action="<%= producto ? `/admin/productos/${producto.id}/editar` : '/admin/productos/nuevo' %>"
+      enctype="multipart/form-data">
+
+      <div class="form-group">
+        <label for="nombre">Nombre del producto</label>
+        <input type="text" id="nombre" name="nombre" required value="<%= producto ? producto.nombre : '' %>">
+      </div>
+
+      <div class="form-group">
+        <label for="descripcion">Descripción</label>
+        <textarea id="descripcion" name="descripcion"><%= producto ? producto.descripcion : '' %></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="precio">Precio ($)</label>
+        <input type="number" id="precio" name="precio" step="0.01" min="0" required value="<%= producto ? producto.precio : '' %>">
+      </div>
+
+      <div class="form-group">
+        <label for="categoria">Categoría</label>
+        <select id="categoria" name="categoria" required>
+          <option value="">-- Seleccionar --</option>
+          <option value="juegos" <%= producto && producto.categoria === 'juegos' ? 'selected' : '' %>>Juegos</option>
+          <option value="accesorios" <%= producto && producto.categoria === 'accesorios' ? 'selected' : '' %>>Accesorios</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="imagen">Imagen del producto</label>
+        <% if (producto && producto.imagen) { %>
+          <img class="img-preview" src="/uploads/<%= producto.imagen %>" alt="Imagen actual" id="preview">
+        <% } else { %>
+          <img class="img-preview" src="" alt="" id="preview" style="display:none">
+        <% } %>
+        <input type="file" id="imagen" name="imagen" accept="image/*" onchange="previewImg(this)">
+      </div>
+
+      <div class="btn-row">
+        <button type="submit" class="btn btn-primary"><%= producto ? 'Guardar cambios' : 'Agregar producto' %></button>
+        <a href="/admin/dashboard" class="btn btn-secondary">Cancelar</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  function previewImg(input) {
+    const preview = document.getElementById('preview');
+    if (input.files && input.files[0]) {
+      preview.src = URL.createObjectURL(input.files[0]);
+      preview.style.display = 'block';
+    }
+  }
+</script>
+</body>
+</html>

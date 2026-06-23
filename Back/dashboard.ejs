@@ -1,0 +1,98 @@
+<%- include('partials/header', { usuario }) %>
+
+<style>
+  h2 { color: #a78bfa; margin-bottom: 1.5rem; }
+  .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+  .btn { padding: 0.6rem 1.2rem; border: none; border-radius: 8px; cursor: pointer; font-size: 0.9rem; text-decoration: none; display: inline-block; }
+  .btn-primary { background: #7c3aed; color: white; }
+  .btn-success { background: #065f46; color: #6ee7b7; }
+  .btn-danger { background: #450a0a; color: #fca5a5; }
+  .btn-warning { background: #78350f; color: #fde68a; }
+  .categoria-titulo { font-size: 1.1rem; color: #c4b5fd; border-bottom: 1px solid #4c1d95; padding-bottom: 0.5rem; margin: 1.5rem 0 1rem; }
+  table { width: 100%; border-collapse: collapse; background: #1a1a2e; border-radius: 10px; overflow: hidden; }
+  th { background: #4c1d95; color: #e9d5ff; padding: 0.75rem 1rem; text-align: left; font-size: 0.85rem; }
+  td { padding: 0.75rem 1rem; border-bottom: 1px solid #2d2d4e; font-size: 0.9rem; }
+  tr:last-child td { border-bottom: none; }
+  .badge { padding: 0.25rem 0.6rem; border-radius: 20px; font-size: 0.75rem; font-weight: bold; }
+  .badge-activo { background: #065f46; color: #6ee7b7; }
+  .badge-inactivo { background: #450a0a; color: #fca5a5; }
+  .acciones { display: flex; gap: 0.5rem; }
+  img.thumb { width: 50px; height: 50px; object-fit: cover; border-radius: 6px; }
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 100; align-items: center; justify-content: center; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: #1a1a2e; border: 1px solid #7c3aed; border-radius: 12px; padding: 2rem; max-width: 400px; width: 90%; text-align: center; }
+  .modal h3 { color: #a78bfa; margin-bottom: 1rem; }
+  .modal-btns { display: flex; gap: 1rem; justify-content: center; margin-top: 1.5rem; }
+</style>
+
+<div class="container">
+  <div class="top-bar">
+    <h2>🎮 Dashboard — Hola, <%= usuario %></h2>
+    <a href="/admin/productos/nuevo" class="btn btn-primary">+ Agregar producto</a>
+  </div>
+
+  <% ['juegos', 'accesorios'].forEach(cat => { %>
+    <div class="categoria-titulo"><%= cat.charAt(0).toUpperCase() + cat.slice(1) %></div>
+    <table>
+      <thead>
+        <tr>
+          <th>Imagen</th><th>Nombre</th><th>Precio</th><th>Estado</th><th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% const filtrados = productos.filter(p => p.categoria === cat); %>
+        <% if (filtrados.length === 0) { %>
+          <tr><td colspan="5" style="color:#6b7280">No hay productos en esta categoría.</td></tr>
+        <% } %>
+        <% filtrados.forEach(p => { %>
+          <tr>
+            <td><img class="thumb" src="/uploads/<%= p.imagen %>" alt="<%= p.nombre %>"></td>
+            <td><%= p.nombre %></td>
+            <td>$<%= parseFloat(p.precio).toFixed(2) %></td>
+            <td><span class="badge badge-<%= p.activo ? 'activo' : 'inactivo' %>"><%= p.activo ? 'Activo' : 'Inactivo' %></span></td>
+            <td>
+              <div class="acciones">
+                <a href="/admin/productos/<%= p.id %>/editar" class="btn btn-warning">Editar</a>
+                <button class="btn <%= p.activo ? 'btn-danger' : 'btn-success' %>"
+                  onclick="abrirModal(<%= p.id %>, <%= p.activo %>)">
+                  <%= p.activo ? 'Desactivar' : 'Activar' %>
+                </button>
+              </div>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  <% }) %>
+</div>
+
+<!-- Modal confirmación -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <h3 id="modal-titulo">¿Estás seguro?</h3>
+    <p id="modal-texto"></p>
+    <div class="modal-btns">
+      <form method="POST" id="modal-form">
+        <input type="hidden" name="_method" value="POST">
+        <button type="submit" class="btn btn-primary">Confirmar</button>
+      </form>
+      <button class="btn" style="background:#374151" onclick="cerrarModal()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  function abrirModal(id, activo) {
+    document.getElementById('modal-titulo').textContent = activo ? '¿Desactivar producto?' : '¿Activar producto?';
+    document.getElementById('modal-texto').textContent = activo
+      ? 'El producto dejará de verse en el autoservicio.'
+      : 'El producto volverá a aparecer en el autoservicio.';
+    document.getElementById('modal-form').action = `/admin/productos/${id}/estado`;
+    document.getElementById('modal').classList.add('open');
+  }
+  function cerrarModal() {
+    document.getElementById('modal').classList.remove('open');
+  }
+</script>
+</body>
+</html>
