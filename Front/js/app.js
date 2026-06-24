@@ -218,14 +218,8 @@ function configurarTabs() {
 }
 
 function obtenerProductosFiltrados() {
-  // Solo productos activos (requisito del TP)
-  let productos = PRODUCTOS_MOCK.filter((p) => p.activo);
-
-  if (categoriaActual !== "todos") {
-    productos = productos.filter((p) => p.categoria === categoriaActual);
-  }
-
-  return productos;
+  const activos = PRODUCTOS_CACHE.filter((p) => p.activo);
+  return categoriaActual === "todos" ? activos : activos.filter((p) => p.categoria === categoriaActual);
 }
 
 function renderizarProductos() {
@@ -373,15 +367,19 @@ function cerrarModalCantidad() {
 
 let idAEliminar = null;
 
-document.addEventListener("DOMContentLoaded", () => {
-  const listaCarrito = document.getElementById("lista-carrito");
-  if (!listaCarrito) return; // No estamos en carrito.html
+document.addEventListener("DOMContentLoaded", async () => {
+  const grid = $("grid-productos");
+  if (!grid) return;
 
   const nombre = obtenerNombreCliente();
-  if (!nombre) {
-    window.location.href = "index.html";
-    return;
-  }
+  if (!nombre) return (window.location.href = "index.html");
+  $("nombre-cliente").textContent = nombre;
+
+  await cargarProductosDesdeAPI(); // ← primero carga desde API
+  configurarTabs();
+  configurarModalCantidad();
+  renderizarProductos();
+});
 
   renderizarCarrito();
   configurarModales();
@@ -390,7 +388,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (obtenerCarrito().length === 0) return;
     document.getElementById("modal-confirmar").classList.add("activo");
   });
-});
+
 
 function renderizarCarrito() {
   const carrito = obtenerCarrito();
@@ -502,21 +500,37 @@ function configurarModales() {
 }
 
 /* ── Finalizar compra → guarda venta y redirige a ticket ────────────────── */
-function finalizarCompra() {
+async function finalizarCompra() {
   const carrito = obtenerCarrito();
-  const nombre = obtenerNombreCliente();
+  const nombre_cliente = obtenerNombreCliente();
 
   const venta = {
-    nombre_cliente: nombre,
+    nombre_cliente,
     fecha: new Date().toISOString(),
     productos: carrito,
     total: calcularTotalCarrito(),
   };
 
-  // Guardamos el ticket para que la pantalla de ticket lo lea
+  // Guardar ticket local para mostrarlo en ticket.html
   localStorage.setItem("gamezone_ultimo_ticket", JSON.stringify(venta));
 
-  // TODO: cuando se conecte al backend, acá va el fetch POST a /api/ventas
+  // Enviar venta al backend
+  try {
+    await fetch('/api/ventas', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        nombre_cliente,
+        productos: carrito.map(p => ({
+          id: p.id,
+          cantidad: p.cantidad,
+          precio_unitario: p.precio
+        }))
+      })
+    });
+  } catch (error) {
+    console.error('Error al guardar venta:', error);
+  }
 
   vaciarCarrito();
   window.location.href = "ticket.html";

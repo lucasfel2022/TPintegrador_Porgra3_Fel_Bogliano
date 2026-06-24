@@ -1,6 +1,5 @@
 const { DataTypes } = require('sequelize');
-const { sequelize } = require('./config/database');
-
+const { sequelize } = require('./database');  // ← así sequelize queda definido
 /* ════════════════════════════════════════════════════════════════════════
    MODELO: Usuario (administradores del sistema)
    ════════════════════════════════════════════════════════════════════════ */
