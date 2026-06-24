@@ -1,4 +1,9 @@
 /* ════════════════════════════════════════════════════════════════════════
+   CONFIG — URL base del backend
+   ════════════════════════════════════════════════════════════════════════ */
+const API_BASE = "http://localhost:3000";
+
+/* ════════════════════════════════════════════════════════════════════════
    TEMA — Maneja el cambio entre tema claro / oscuro y lo persiste
    ════════════════════════════════════════════════════════════════════════ */
 
@@ -33,9 +38,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-/* ════════════════════════════════════════════════════════════════════════
-   MÓDULO: Carrito (lógica centralizada con localStorage)
-   ════════════════════════════════════════════════════════════════════════ */
 /* ════════════════════════════════════════════════════════════════════════
    CARRITO — Lógica centralizada usando localStorage
    Estructura guardada: [{ id, nombre, precio, imagen, cantidad }]
@@ -108,7 +110,7 @@ function vaciarCarrito() {
   actualizarBadgeCarrito();
 }
 
-
+// Actualiza el contador visual en la navbar (si existe en la página actual)
 function actualizarBadgeCarrito() {
   const badge = document.getElementById("badge-carrito");
   if (badge) {
@@ -118,6 +120,7 @@ function actualizarBadgeCarrito() {
   }
 }
 
+// ── Datos del cliente (nombre ingresado en bienvenida) ────────────────────
 function guardarNombreCliente(nombre) {
   localStorage.setItem(CLAVE_CLIENTE, nombre);
 }
@@ -186,8 +189,9 @@ let categoriaActual = "todos";
 let paginaActual = 1;
 let productoSeleccionado = null;
 let cantidadSeleccionada = 1;
+let PRODUCTOS_CACHE = []; // guarda lo último que trajo la API
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   const grid = document.getElementById("grid-productos");
   if (!grid) return; // No estamos en productos.html
 
@@ -199,10 +203,31 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   document.getElementById("nombre-cliente").textContent = nombre;
 
+  await cargarProductosDesdeAPI();
   configurarTabs();
   configurarModalCantidad();
   renderizarProductos();
 });
+
+// Trae los productos reales desde el backend y los guarda en PRODUCTOS_CACHE
+async function cargarProductosDesdeAPI() {
+  const grid = document.getElementById("grid-productos");
+  try {
+    const res = await fetch(`${API_BASE}/api/productos?limit=100`);
+    const data = await res.json();
+
+    if (data.ok) {
+      PRODUCTOS_CACHE = data.productos;
+    } else {
+      console.error("La API respondió con error:", data.mensaje);
+      PRODUCTOS_CACHE = [];
+    }
+  } catch (error) {
+    console.error("No se pudo conectar con el backend:", error);
+    PRODUCTOS_CACHE = [];
+    grid.innerHTML = `<p class="sin-productos">No se pudo conectar con el servidor. ¿Está corriendo el backend en ${API_BASE}?</p>`;
+  }
+}
 
 function configurarTabs() {
   const tabs = document.querySelectorAll(".tab-categoria");
@@ -218,6 +243,7 @@ function configurarTabs() {
 }
 
 function obtenerProductosFiltrados() {
+  // Solo productos activos (requisito del TP)
   const activos = PRODUCTOS_CACHE.filter((p) => p.activo);
   return categoriaActual === "todos" ? activos : activos.filter((p) => p.categoria === categoriaActual);
 }
@@ -252,7 +278,10 @@ function crearCardProducto(producto) {
   const imgWrapper = document.createElement("div");
   imgWrapper.classList.add("producto-img-wrapper");
   const img = document.createElement("img");
-  img.src = producto.imagen;
+  // La API devuelve solo el nombre del archivo; armamos la ruta completa al backend
+  img.src = producto.imagen && producto.imagen.startsWith("http")
+    ? producto.imagen
+    : `${API_BASE}/uploads/${producto.imagen}`;
   img.alt = producto.nombre;
   img.loading = "lazy";
   imgWrapper.appendChild(img);
@@ -367,19 +396,15 @@ function cerrarModalCantidad() {
 
 let idAEliminar = null;
 
-document.addEventListener("DOMContentLoaded", async () => {
-  const grid = $("grid-productos");
-  if (!grid) return;
+document.addEventListener("DOMContentLoaded", () => {
+  const listaCarrito = document.getElementById("lista-carrito");
+  if (!listaCarrito) return; // No estamos en carrito.html
 
   const nombre = obtenerNombreCliente();
-  if (!nombre) return (window.location.href = "index.html");
-  $("nombre-cliente").textContent = nombre;
-
-  await cargarProductosDesdeAPI(); // ← primero carga desde API
-  configurarTabs();
-  configurarModalCantidad();
-  renderizarProductos();
-});
+  if (!nombre) {
+    window.location.href = "index.html";
+    return;
+  }
 
   renderizarCarrito();
   configurarModales();
@@ -388,7 +413,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (obtenerCarrito().length === 0) return;
     document.getElementById("modal-confirmar").classList.add("activo");
   });
-
+});
 
 function renderizarCarrito() {
   const carrito = obtenerCarrito();
@@ -419,7 +444,7 @@ function crearItemCarrito(item) {
   div.classList.add("item-carrito");
 
   const img = document.createElement("img");
-  img.src = item.imagen;
+  img.src = item.imagen && item.imagen.startsWith("http") ? item.imagen : `${API_BASE}/uploads/${item.imagen}`;
   img.alt = item.nombre;
 
   const info = document.createElement("div");
@@ -499,41 +524,47 @@ function configurarModales() {
   document.getElementById("btn-confirmar-compra").addEventListener("click", finalizarCompra);
 }
 
-/* ── Finalizar compra → guarda venta y redirige a ticket ────────────────── */
+/* ── Finalizar compra → guarda venta en el backend y redirige a ticket ──── */
 async function finalizarCompra() {
   const carrito = obtenerCarrito();
   const nombre_cliente = obtenerNombreCliente();
 
-  const venta = {
+  const body = {
     nombre_cliente,
-    fecha: new Date().toISOString(),
-    productos: carrito,
-    total: calcularTotalCarrito(),
+    productos: carrito.map((item) => ({
+      id: item.id,
+      cantidad: item.cantidad,
+      precio_unitario: item.precio,
+    })),
   };
 
-  // Guardar ticket local para mostrarlo en ticket.html
-  localStorage.setItem("gamezone_ultimo_ticket", JSON.stringify(venta));
-
-  // Enviar venta al backend
   try {
-    await fetch('/api/ventas', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        nombre_cliente,
-        productos: carrito.map(p => ({
-          id: p.id,
-          cantidad: p.cantidad,
-          precio_unitario: p.precio
-        }))
-      })
+    const res = await fetch(`${API_BASE}/api/ventas`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
     });
-  } catch (error) {
-    console.error('Error al guardar venta:', error);
-  }
+    const data = await res.json();
 
-  vaciarCarrito();
-  window.location.href = "ticket.html";
+    if (!data.ok) {
+      alert("No se pudo registrar la compra. Probá de nuevo.");
+      return;
+    }
+
+    // Guardamos el ticket con los datos reales que devolvió el backend
+    localStorage.setItem("gamezone_ultimo_ticket", JSON.stringify({
+      nombre_cliente: data.venta.nombre_cliente,
+      fecha: data.venta.fecha,
+      productos: carrito,
+      total: Number(data.venta.precio_total),
+    }));
+
+    vaciarCarrito();
+    window.location.href = "ticket.html";
+  } catch (error) {
+    console.error("Error al guardar la venta:", error);
+    alert(`Error de conexión con el servidor. ¿Está corriendo el backend en ${API_BASE}?`);
+  }
 }
 
 /* ════════════════════════════════════════════════════════════════════════
