@@ -24,6 +24,7 @@ app.use('/api/productos', routerProductos);
 app.use('/api/ventas', routerVentas);
 app.use('/api/usuarios', routerUsuarios);
 app.use('/admin', routerAdmin);
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../Front/index.html'));

@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('./database');  // ← así sequelize queda definido
 /* ════════════════════════════════════════════════════════════════════════
-   MODELO: Usuario (administradores del sistema)
+  MODELO: Usuario (administradores del sistema)
    ════════════════════════════════════════════════════════════════════════ */
 const Usuario = sequelize.define('Usuario', {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
@@ -19,7 +19,7 @@ const Usuario = sequelize.define('Usuario', {
 });
 
 /* ════════════════════════════════════════════════════════════════════════
-   MODELO: Producto (juegos y accesorios)
+  MODELO: Producto (juegos y accesorios)
    ════════════════════════════════════════════════════════════════════════ */
 const Producto = sequelize.define('Producto', {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
@@ -39,7 +39,7 @@ const Producto = sequelize.define('Producto', {
 });
 
 /* ════════════════════════════════════════════════════════════════════════
-   MODELO: Venta (registro de compras realizadas por clientes)
+  MODELO: Venta (registro de compras realizadas por clientes)
    ════════════════════════════════════════════════════════════════════════ */
 const Venta = sequelize.define('Venta', {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
@@ -56,7 +56,7 @@ const Venta = sequelize.define('Venta', {
 });
 
 /* ════════════════════════════════════════════════════════════════════════
-   MODELO: VentaProducto (tabla intermedia N:M entre Venta y Producto)
+  MODELO: VentaProducto (tabla intermedia N:M entre Venta y Producto)
    ════════════════════════════════════════════════════════════════════════ */
 const VentaProducto = sequelize.define('VentaProducto', {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
@@ -77,7 +77,7 @@ const VentaProducto = sequelize.define('VentaProducto', {
 });
 
 /* ════════════════════════════════════════════════════════════════════════
-   ASOCIACIONES
+  ASOCIACIONES
    ════════════════════════════════════════════════════════════════════════ */
 
 // Relación N:M entre Venta y Producto a través de VentaProducto
@@ -100,4 +100,21 @@ VentaProducto.belongsTo(Venta, { foreignKey: 'venta_id' });
 Producto.hasMany(VentaProducto, { foreignKey: 'producto_id' });
 VentaProducto.belongsTo(Producto, { foreignKey: 'producto_id' });
 
-module.exports = { Usuario, Producto, Venta, VentaProducto };
+/* ════════════════════════════════════════════════════════════════════════
+  MODELO: LogSesion (registro de inicios de sesión de administradores)
+   ════════════════════════════════════════════════════════════════════════ */
+const LogSesion = sequelize.define('LogSesion', {
+  id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+  usuario_id: { type: DataTypes.INTEGER, allowNull: false },
+  email: { type: DataTypes.STRING, allowNull: false },
+  fecha: { type: DataTypes.DATE, allowNull: false, defaultValue: DataTypes.NOW },
+}, {
+  tableName: 'log_sesiones',
+  timestamps: false,
+});
+
+LogSesion.belongsTo(Usuario, { foreignKey: 'usuario_id' });
+Usuario.hasMany(LogSesion, { foreignKey: 'usuario_id' });
+
+module.exports = { Usuario, Producto, Venta, VentaProducto, LogSesion };
+

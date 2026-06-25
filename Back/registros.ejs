@@ -1,0 +1,95 @@
+<%- include('partials/header') %>
+
+<div class="admin-container">
+    <div class="admin-header">
+        <h2>📊 Registros</h2>
+        <div class="admin-actions">
+            <a href="/admin/dashboard" class="btn btn-secondary">← Volver al dashboard</a>
+            <a href="/admin/registros/excel" class="btn btn-primary">⬇ Descargar Excel</a>
+        </div>
+    </div>
+
+    <!-- Top 10 productos más vendidos -->
+    <section class="registro-seccion">
+    <h3>🏆 Top 10 productos más vendidos</h3>
+    <table class="tabla-registros">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>Producto</th>
+            <th>Categoría</th>
+            <th>Unidades vendidas</th>
+        </tr>
+    </thead>
+    <tbody>
+        <% topProductos.forEach((item, i) => { %>
+        <tr>
+            <td><%= i + 1 %></td>
+            <td><%= item.Producto ? item.Producto.nombre : 'N/A' %></td>
+            <td><%= item.Producto ? item.Producto.categoria : 'N/A' %></td>
+            <td><%= item.dataValues.total_vendido %></td>
+        </tr>
+        <% }) %>
+        <% if (topProductos.length === 0) { %>
+        <tr><td colspan="4">No hay datos aún</td></tr>
+        <% } %>
+    </tbody>
+    </table>
+</section>
+
+<!-- Top 10 ventas más caras -->
+<section class="registro-seccion">
+    <h3>💰 Top 10 ventas más caras</h3>
+    <table class="tabla-registros">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Cliente</th>
+            <th>Total</th>
+            <th>Fecha</th>
+        </tr>
+    </thead>
+    <tbody>
+        <% topVentas.forEach((venta, i) => { %>
+        <tr>
+            <td><%= i + 1 %></td>
+            <td><%= venta.nombre_cliente %></td>
+            <td>$<%= Number(venta.precio_total).toLocaleString('es-AR') %></td>
+            <td><%= new Date(venta.fecha).toLocaleString('es-AR') %></td>
+        </tr>
+        <% }) %>
+        <% if (topVentas.length === 0) { %>
+        <tr><td colspan="4">No hay ventas aún</td></tr>
+        <% } %>
+    </tbody>
+    </table>
+</section>
+
+<!-- LOG de inicios de sesión -->
+<section class="registro-seccion">
+    <h3>🔐 LOG de inicios de sesión</h3>
+    <table class="tabla-registros">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Email</th>
+            <th>Fecha</th>
+        </tr>
+    </thead>
+    <tbody>
+        <% logs.forEach((log, i) => { %>
+        <tr>
+            <td><%= i + 1 %></td>
+            <td><%= log.email %></td>
+            <td><%= new Date(log.fecha).toLocaleString('es-AR') %></td>
+        </tr>
+        <% }) %>
+        <% if (logs.length === 0) { %>
+        <tr><td colspan="3">No hay registros aún</td></tr>
+        <% } %>
+    </tbody>
+    </table>
+</section>
+</div>
+
+<%- include('partials/footer') %>

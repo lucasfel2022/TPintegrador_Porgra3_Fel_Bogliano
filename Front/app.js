@@ -187,11 +187,10 @@ let paginaActual = 1;
 let productoSeleccionado = null;
 let cantidadSeleccionada = 1;
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   const grid = document.getElementById("grid-productos");
-  if (!grid) return; // No estamos en productos.html
+  if (!grid) return;
 
-  // Si no hay nombre de cliente, lo mandamos de vuelta a bienvenida
   const nombre = obtenerNombreCliente();
   if (!nombre) {
     window.location.href = "index.html";
@@ -199,6 +198,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   document.getElementById("nombre-cliente").textContent = nombre;
 
+  await cargarProductosDesdeAPI();
   configurarTabs();
   configurarModalCantidad();
   renderizarProductos();
@@ -252,7 +252,8 @@ function crearCardProducto(producto) {
   const imgWrapper = document.createElement("div");
   imgWrapper.classList.add("producto-img-wrapper");
   const img = document.createElement("img");
-  img.src = producto.imagen;
+  //img.src = producto.imagen;
+  img.src = `/uploads/${producto.imagen}`;
   img.alt = producto.nombre;
   img.loading = "lazy";
   imgWrapper.appendChild(img);
@@ -267,6 +268,10 @@ function crearCardProducto(producto) {
   const nombre = document.createElement("h3");
   nombre.classList.add("producto-nombre");
   nombre.textContent = producto.nombre;
+  nombre.style.cursor = "pointer";
+  nombre.addEventListener("click", () => {
+  window.location.href = `detalle.html?id=${producto.id}`;
+  });
 
   const desc = document.createElement("p");
   desc.classList.add("producto-desc");
@@ -367,19 +372,9 @@ function cerrarModalCantidad() {
 
 let idAEliminar = null;
 
-document.addEventListener("DOMContentLoaded", async () => {
-  const grid = $("grid-productos");
-  if (!grid) return;
-
-  const nombre = obtenerNombreCliente();
-  if (!nombre) return (window.location.href = "index.html");
-  $("nombre-cliente").textContent = nombre;
-
-  await cargarProductosDesdeAPI(); // ← primero carga desde API
-  configurarTabs();
-  configurarModalCantidad();
-  renderizarProductos();
-});
+document.addEventListener("DOMContentLoaded", () => {
+  if (!document.getElementById("lista-carrito")) return;
+  if (!obtenerNombreCliente()) return (window.location.href = "index.html");
 
   renderizarCarrito();
   configurarModales();
@@ -388,6 +383,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (obtenerCarrito().length === 0) return;
     document.getElementById("modal-confirmar").classList.add("activo");
   });
+});
 
 
 function renderizarCarrito() {
@@ -606,4 +602,53 @@ function nuevaCompra() {
   localStorage.removeItem("gamezone_ultimo_ticket");
   limpiarSesionCliente();
   window.location.href = "index.html";
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   PANTALLA: Detalle de producto (detalle.html)
+   ════════════════════════════════════════════════════════════════════════ */
+document.addEventListener("DOMContentLoaded", async () => {
+  const wrapper = document.getElementById("detalle-wrapper");
+  if (!wrapper) return;
+
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get("id");
+
+  if (!id) {
+    wrapper.innerHTML = `<p>Producto no encontrado.</p>`;
+    return;
+  }
+
+  try {
+    const res = await fetch(`/api/productos/${id}`);
+    const data = await res.json();
+
+    if (!data.ok || !data.producto) {
+      wrapper.innerHTML = `<p>Producto no encontrado.</p>`;
+      return;
+    }
+
+    const p = data.producto;
+    wrapper.innerHTML = `
+      <div class="detalle-card">
+        <img src="/uploads/${p.imagen}" alt="${p.nombre}" class="detalle-img">
+        <div class="detalle-info">
+          <span class="producto-categoria-tag">${p.categoria}</span>
+          <h2>${p.nombre}</h2>
+          <p>${p.descripcion || ''}</p>
+          <p class="producto-precio">$${formatearPrecio(Number(p.precio))}</p>
+          <button class="btn btn-primary" onclick="agregarDesdeDetalle(${JSON.stringify(p).replace(/"/g, '&quot;')})">
+            Agregar al carrito
+          </button>
+        </div>
+      </div>
+    `;
+  } catch (error) {
+    wrapper.innerHTML = `<p>Error al cargar el producto.</p>`;
+  }
+});
+
+function agregarDesdeDetalle(producto) {
+  agregarAlCarrito(producto, 1);
+  window.location.href = "carrito.html";
 }
