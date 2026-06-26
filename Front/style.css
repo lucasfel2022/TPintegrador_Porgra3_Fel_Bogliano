@@ -847,36 +847,3 @@ footer {
   flex: 1;
   justify-content: center;
 }
-
-.detalle-card {
-  display: flex;
-  gap: 2rem;
-  background: var(--bg-card);
-  border-radius: 12px;
-  padding: 2rem;
-  margin-top: 1rem;
-}
-
-.detalle-img {
-  width: 350px;
-  height: 350px;
-  object-fit: contain;
-  border-radius: 8px;
-  background: var(--bg-secondary);
-}
-
-.detalle-info {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-@media (max-width: 768px) {
-  .detalle-card {
-    flex-direction: column;
-  }
-  .detalle-img {
-    width: 100%;
-    height: 250px;
-  }
-}
