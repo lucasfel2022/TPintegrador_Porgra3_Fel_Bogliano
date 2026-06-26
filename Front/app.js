@@ -415,7 +415,7 @@ function crearItemCarrito(item) {
   div.classList.add("item-carrito");
 
   const img = document.createElement("img");
-  img.src = item.imagen;
+  img.src = `/uploads/${item.imagen}`;
   img.alt = item.nombre;
 
   const info = document.createElement("div");
