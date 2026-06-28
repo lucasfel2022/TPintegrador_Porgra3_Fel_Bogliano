@@ -14,24 +14,10 @@
     .nav-brand span { font-size: 0.75rem; color: #6b7280; display: block; }
     nav a { color: #c4b5fd; text-decoration: none; margin-left: 1.5rem; font-size: 0.9rem; }
     nav a:hover { color: #fff; }
+    .btn-tienda { background: #7c3aed; color: #fff !important; padding: 0.4rem 1rem; border-radius: 6px; margin-left: 1.5rem; font-size: 0.9rem; }
+    .btn-tienda:hover { background: #6d28d9; }
     .container { max-width: 1100px; margin: 2rem auto; padding: 0 1rem; }
     .alumnos { font-size: 0.7rem; color: #6b7280; text-align: right; padding: 0.25rem 2rem; background: #1a1a2e; }
-    .admin-container { max-width: 1100px; margin: 2rem auto; padding: 0 1rem; }
-    .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
-    .admin-header h2 { font-size: 1.8rem; color: #a78bfa; }
-    .admin-actions { display: flex; gap: 1rem; }
-    .btn { padding: 0.5rem 1.2rem; border-radius: 8px; border: none; cursor: pointer; font-size: 0.9rem; text-decoration: none; display: inline-block; }
-    .btn-primary { background: #7c3aed; color: white; }
-    .btn-primary:hover { background: #6d28d9; }
-    .btn-secondary { background: #374151; color: white; }
-    .btn-secondary:hover { background: #4b5563; }
-    .registro-seccion { margin-bottom: 2.5rem; background: #1a1a2e; border-radius: 12px; padding: 1.5rem; border: 1px solid #2d2d44; }
-    .registro-seccion h3 { color: #a78bfa; margin-bottom: 1rem; font-size: 1.2rem; }
-    .tabla-registros { width: 100%; border-collapse: collapse; }
-    .tabla-registros th { background: #7c3aed; color: white; padding: 0.75rem 1rem; text-align: left; }
-    .tabla-registros td { padding: 0.75rem 1rem; border-bottom: 1px solid #2d2d44; color: #e0e0e0; }
-    .tabla-registros tr:hover td { background: #252540; }
-    .tabla-registros tr:last-child td { border-bottom: none; }
   </style>
 </head>
 <body>
@@ -45,11 +31,11 @@
     </div>
   </div>
   <div>
-  <% if (typeof usuario !== 'undefined' && usuario) { %>
-    <a href="/admin/dashboard">Dashboard</a>
-    <a href="/admin/registros">Registros</a>
-    <a href="/" target="_blank">🛒 Ver tienda</a>
-    <a href="/admin/logout">Cerrar sesión</a>
-  <% } %>
-</div>
+    <% if (typeof usuario !== 'undefined' && usuario) { %>
+      <a href="/admin/dashboard">Dashboard</a>
+      <a href="/admin/registros">Registros</a>
+      <a href="/admin/logout">Cerrar sesión</a>
+    <% } %>
+    <a href="/" class="btn-tienda">🛒 Ir a la tienda</a>
+  </div>
 </nav>
