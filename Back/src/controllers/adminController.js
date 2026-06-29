@@ -1,11 +1,11 @@
-const bcrypt   = require('bcrypt');
+const bcrypt  = require('bcrypt');
 const { Usuario, Producto, LogSesion } = require('../models');
 
 const adminController = {
 
   getLogin: (req, res) => {
     if (req.session.usuarioId) return res.redirect('/admin/dashboard');
-    res.render('login', { error: null });
+    res.render('login', { error: null, usuario: null });
   },
 
   postLogin: async (req, res) => {
@@ -14,7 +14,7 @@ const adminController = {
       const usuario = await Usuario.findOne({ where: { email } });
 
       if (!usuario || !(await bcrypt.compare(password, usuario.password))) {
-        return res.render('login', { error: 'Email o contraseña incorrectos' });
+        return res.render('login', { error: 'Email o contraseña incorrectos', usuario: null });
       }
 
       req.session.usuarioId     = usuario.id;
@@ -25,7 +25,7 @@ const adminController = {
       res.redirect('/admin/dashboard');
     } catch (error) {
       console.error(error);
-      res.render('login', { error: 'Error interno, intentá de nuevo' });
+      res.render('login', { error: 'Error interno, intentá de nuevo', usuario: null });
     }
   },
 
@@ -47,7 +47,7 @@ const adminController = {
   },
 
   getNuevoProducto: (req, res) => {
-    res.render('producto-form', { producto: null, error: null });
+    res.render('producto-form', { producto: null, error: null, usuario: req.session.usuarioNombre });
   },
 
   postNuevoProducto: async (req, res) => {
@@ -58,7 +58,7 @@ const adminController = {
       res.redirect('/admin/dashboard');
     } catch (error) {
       console.error(error);
-      res.render('producto-form', { producto: null, error: 'Error al crear el producto' });
+      res.render('producto-form', { producto: null, error: 'Error al crear el producto', usuario: req.session.usuarioNombre });
     }
   },
 
@@ -66,8 +66,9 @@ const adminController = {
     try {
       const producto = await Producto.findByPk(req.params.id);
       if (!producto) return res.redirect('/admin/dashboard');
-      res.render('producto-form', { producto, error: null });
+      res.render('producto-form', { producto, error: null, usuario: req.session.usuarioNombre });
     } catch (error) {
+      console.error(error);
       res.redirect('/admin/dashboard');
     }
   },
@@ -83,7 +84,7 @@ const adminController = {
       res.redirect('/admin/dashboard');
     } catch (error) {
       console.error(error);
-      res.redirect('/admin/dashboard');
+      res.render('producto-form', { producto: null, error: 'Error al editar el producto', usuario: req.session.usuarioNombre });
     }
   },
 
@@ -93,6 +94,7 @@ const adminController = {
       if (producto) await producto.update({ activo: !producto.activo });
       res.redirect('/admin/dashboard');
     } catch (error) {
+      console.error(error);
       res.redirect('/admin/dashboard');
     }
   },
