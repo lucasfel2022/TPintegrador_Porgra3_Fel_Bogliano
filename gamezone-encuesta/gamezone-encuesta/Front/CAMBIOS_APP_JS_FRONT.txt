@@ -1,0 +1,39 @@
+════════════════════════════════════════════════════════════════════════
+CAMBIOS A APLICAR EN Front/app.js (tu archivo real)
+════════════════════════════════════════════════════════════════════════
+
+Buscar esta función (sección PANTALLA: Ticket):
+
+function nuevaCompra() {
+  // Reinicia el flujo completo: borra cliente, carrito y ticket
+  localStorage.removeItem("gamezone_ultimo_ticket");
+  limpiarSesionCliente();
+  window.location.href = "index.html";
+}
+
+REEMPLAZAR POR:
+
+function nuevaCompra() {
+  // Antes de reiniciar el flujo, mandamos al cliente a la encuesta.
+  // La limpieza de localStorage (carrito/cliente/ticket) se hace
+  // recién cuando vuelve de la encuesta o la omite, no acá.
+  window.location.href = "/encuesta";
+}
+
+────────────────────────────────────────────────────────────────────────
+NOTA IMPORTANTE: con este cambio, la limpieza de localStorage que antes
+pasaba en nuevaCompra() ahora tiene que pasar en la pantalla de encuesta
+(al omitir o al cerrar el modal de agradecimiento), porque si no el
+usuario vuelve a index.html con el carrito/cliente todavía guardados.
+
+Esa limpieza YA la hace Front/encuesta.js en los handlers de
+btnOmitir y btnCerrarGracias — pero esas funciones llaman a
+"limpiarSesionCliente()" y "vaciarCarrito()", que viven en este
+mismo app.js. Como encuesta.js se carga como script separado en
+encuesta.ejs (no carga app.js), agregar este pequeño bloque también
+en encuesta.js, o cargar app.js además de encuesta.js en encuesta.ejs.
+
+La forma más prolija: agregar <script src="/app.js"></script> ANTES
+de <script src="/encuesta.js"></script> en encuesta.ejs, así
+encuesta.js puede usar limpiarSesionCliente() directamente.
+Ver el archivo encuesta.ejs ya actualizado más abajo.

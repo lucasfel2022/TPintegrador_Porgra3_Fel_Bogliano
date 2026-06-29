@@ -36,4 +36,17 @@ const validarUsuario = [
   validar,
 ];
 
-module.exports = { validarProducto, validarVenta, validarUsuario };
+const validarEncuesta = [
+  body('opinion')
+    .notEmpty().withMessage('La opinión es obligatoria').trim()
+    .isLength({ min: 10, max: 1000 }).withMessage('La opinión debe tener entre 10 y 1000 caracteres'),
+  body('email')
+    .notEmpty().withMessage('El email es obligatorio')
+    .isEmail().withMessage('Email inválido'),
+  body('puntuacion')
+    .notEmpty().withMessage('La puntuación es obligatoria')
+    .isInt({ min: 1, max: 10 }).withMessage('La puntuación debe ser un número entre 1 y 10'),
+  validar,
+];
+
+module.exports = { validarProducto, validarVenta, validarUsuario, validarEncuesta };

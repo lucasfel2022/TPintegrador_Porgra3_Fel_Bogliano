@@ -3,6 +3,7 @@ const Producto      = require('./Producto');
 const Venta         = require('./Venta');
 const VentaProducto = require('./VentaProducto');
 const LogSesion     = require('./LogSesion');
+const Encuesta      = require('./Encuesta');
 
 // Relación N:M entre Venta y Producto
 Venta.belongsToMany(Producto, { through: VentaProducto, foreignKey: 'venta_id', otherKey: 'producto_id' });
@@ -18,4 +19,8 @@ VentaProducto.belongsTo(Producto,  { foreignKey: 'producto_id' });
 LogSesion.belongsTo(Usuario, { foreignKey: 'usuario_id' });
 Usuario.hasMany(LogSesion,   { foreignKey: 'usuario_id' });
 
-module.exports = { Usuario, Producto, Venta, VentaProducto, LogSesion };
+// Venta → Encuesta (una encuesta puede estar asociada a una venta puntual)
+Venta.hasOne(Encuesta,    { foreignKey: 'venta_id' });
+Encuesta.belongsTo(Venta, { foreignKey: 'venta_id' });
+
+module.exports = { Usuario, Producto, Venta, VentaProducto, LogSesion, Encuesta };

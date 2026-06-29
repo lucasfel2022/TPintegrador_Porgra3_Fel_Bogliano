@@ -1,0 +1,74 @@
+<!-- ════════════════════════════════════════════════════════════════════════
+     AGREGAR este bloque en partials/registros.ejs, donde quieras que
+     aparezcan las tablas de encuestas (ej: después del bloque de "Logs"
+     que ya tenés armado con la misma estructura de tabla)
+     ════════════════════════════════════════════════════════════════════════ -->
+
+<div class="panel-card">
+  <h2>Encuestas de satisfacción</h2>
+
+  <form method="GET" action="/admin/registros" class="filtro-fechas">
+    <label for="desde">Desde:
+      <input type="date" id="desde" name="desde" value="<%= filtroDesde %>">
+    </label>
+    <label for="hasta">Hasta:
+      <input type="date" id="hasta" name="hasta" value="<%= filtroHasta %>">
+    </label>
+    <button type="submit" class="btn btn-secondary">Filtrar</button>
+    <% if (filtroDesde || filtroHasta) { %>
+      <a href="/admin/registros" class="btn-omitir">Limpiar filtro</a>
+    <% } %>
+  </form>
+
+  <!-- TABLA NUEVA 1: Resumen / estadísticas -->
+  <h3>Resumen</h3>
+  <table class="tabla-admin">
+    <thead>
+      <tr>
+        <th>Cantidad de encuestas</th>
+        <th>Promedio puntuación</th>
+        <th>Puntuación mínima</th>
+        <th>Puntuación máxima</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><%= resumenEncuestas.cantidad %></td>
+        <td>
+          <%= resumenEncuestas.promedio_puntuacion
+                ? Number(resumenEncuestas.promedio_puntuacion).toFixed(1)
+                : '—' %>
+        </td>
+        <td><%= resumenEncuestas.puntuacion_minima ?? '—' %></td>
+        <td><%= resumenEncuestas.puntuacion_maxima ?? '—' %></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- TABLA NUEVA 2: Detalle de las últimas encuestas en el rango filtrado -->
+  <h3>Últimas encuestas</h3>
+  <% if (detalleEncuestas.length === 0) { %>
+    <p class="sin-datos">No hay encuestas en el rango seleccionado.</p>
+  <% } else { %>
+    <table class="tabla-admin">
+      <thead>
+        <tr>
+          <th>Email</th>
+          <th>Puntuación</th>
+          <th>Opinión</th>
+          <th>Fecha</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% detalleEncuestas.forEach((e) => { %>
+          <tr>
+            <td><%= e.email %></td>
+            <td><span class="badge-puntuacion"><%= e.puntuacion %>/10</span></td>
+            <td class="celda-opinion"><%= e.opinion %></td>
+            <td><%= new Date(e.fecha).toLocaleString('es-AR') %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  <% } %>
+</div>

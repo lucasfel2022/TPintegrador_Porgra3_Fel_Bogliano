@@ -598,10 +598,8 @@ function descargarPDF() {
 }
 
 function nuevaCompra() {
-  // Reinicia el flujo completo: borra cliente, carrito y ticket
-  localStorage.removeItem("gamezone_ultimo_ticket");
-  limpiarSesionCliente();
-  window.location.href = "index.html";
+  // Antes de reiniciar el flujo, mandamos al cliente a la encuesta.
+  window.location.href = "/encuesta";
 }
 
 /* ════════════════════════════════════════════════════════════════════════

@@ -3,6 +3,7 @@ const adminController  = require('../controllers/adminController');
 const registrosController = require('../controllers/registrosController');
 const { authMiddleware } = require('../middlewares/auth');
 const { upload }         = require('../middlewares/upload');
+const encuestaController = require('../controllers/encuestaController');
 
 const router = express.Router();
 
@@ -24,5 +25,5 @@ router.post('/productos/:id/estado',   authMiddleware, adminController.cambiarEs
 // Registros
 router.get('/registros',       authMiddleware, registrosController.getRegistros);
 router.get('/registros/excel', authMiddleware, registrosController.descargarExcel);
-
+router.get('/asistencia', authMiddleware, encuestaController.verAsistencia);
 module.exports = router;

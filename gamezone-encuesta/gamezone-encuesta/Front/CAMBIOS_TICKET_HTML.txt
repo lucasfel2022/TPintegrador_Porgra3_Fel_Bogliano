@@ -1,0 +1,16 @@
+════════════════════════════════════════════════════════════════════════
+CAMBIOS A APLICAR EN Front/ticket.html (tu archivo real)
+════════════════════════════════════════════════════════════════════════
+
+El botón "btn-nueva-compra" pasa a ser el botón de salida del ticket que
+lleva a la encuesta. No hace falta tocar el HTML del botón en sí (el id
+y el texto pueden quedar igual o renombrarse a gusto), el cambio real
+está en app.js — ver CAMBIOS_APP_JS_FRONT.txt
+
+Si querés cambiarle el texto para que sea más claro, en ticket.html:
+
+ANTES:
+  <button id="btn-nueva-compra" class="btn btn-primary">Nueva compra</button>
+
+DESPUÉS (opcional, mismo id, solo cambia el texto):
+  <button id="btn-nueva-compra" class="btn btn-primary">Salir</button>

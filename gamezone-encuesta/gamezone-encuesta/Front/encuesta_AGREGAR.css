@@ -1,0 +1,155 @@
+/* ════════════════════════════════════════════════════════════════════════
+   AGREGAR a Front/style.css — Estilos para la pantalla de Encuesta
+   (usa las variables de color que ya tengas definidas para tema claro/oscuro;
+   ajustá los nombres de variable si los tuyos son distintos)
+   ════════════════════════════════════════════════════════════════════════ */
+
+.encuesta-wrapper {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+}
+
+.encuesta-intro {
+  margin-bottom: 1.5rem;
+  opacity: 0.8;
+}
+
+.campo-form {
+  margin-bottom: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.campo-form label {
+  font-weight: 600;
+}
+
+.campo-form textarea,
+.campo-form input[type="email"],
+.campo-form input[type="file"] {
+  padding: 0.6rem;
+  border-radius: 6px;
+  border: 1px solid var(--borde, #444);
+  background: var(--fondo-input, transparent);
+  color: inherit;
+  font-family: inherit;
+}
+
+.campo-form input[type="range"] {
+  width: 100%;
+}
+
+.campo-checkbox .label-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 400;
+  cursor: pointer;
+}
+
+.error-campo {
+  color: #e53935;
+  font-size: 0.85rem;
+  min-height: 1em;
+}
+
+.error-general {
+  color: #e53935;
+  margin-top: 0.5rem;
+}
+
+.encuesta-acciones {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+/* Botón Omitir: visible pero deliberadamente discreto, no compite con el primario */
+.btn-omitir {
+  background: none;
+  border: none;
+  color: inherit;
+  opacity: 0.6;
+  font-size: 0.9rem;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+.btn-omitir:hover {
+  opacity: 1;
+}
+
+/* Modal de agradecimiento */
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal.activo {
+  display: flex;
+}
+
+.modal-contenido {
+  background: var(--fondo-card, #1e1e1e);
+  padding: 2rem;
+  border-radius: 10px;
+  max-width: 400px;
+  text-align: center;
+}
+
+/* Input con error (mismo patrón que .input-error en bienvenida) */
+.input-error {
+  border-color: #e53935 !important;
+}
+
+/* Tabla admin reutilizable para asistencia.ejs y registros.ejs */
+.tabla-admin {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.tabla-admin th,
+.tabla-admin td {
+  padding: 0.6rem 0.8rem;
+  border-bottom: 1px solid var(--borde, #444);
+  text-align: left;
+}
+
+.celda-opinion {
+  max-width: 250px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.badge-puntuacion {
+  background: var(--acento, #4caf50);
+  color: #fff;
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+}
+
+.panel-card {
+  padding: 1rem;
+  border-radius: 8px;
+  background: var(--fondo-card, #1a1a1a);
+}
+
+.filtro-fechas {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}

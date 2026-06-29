@@ -1,0 +1,26 @@
+════════════════════════════════════════════════════════════════════════
+CAMBIOS A APLICAR EN Back/app.js (tu archivo real)
+════════════════════════════════════════════════════════════════════════
+
+1) Junto a los demás require de routers, agregar:
+
+const encuestasRouter    = require('./src/routes/encuestas.routes');
+const encuestaController = require('./src/controllers/encuestaController');
+
+2) Junto a los demás app.use de /api, agregar:
+
+app.use('/api/encuestas', encuestasRouter);
+
+3) Ruta de VISTA para el cliente (fuera de /api, renderiza EJS directo).
+   Agregarla junto a la ruta raíz "/" que ya tenés, ANTES de esa ruta raíz
+   (para que Express no la confunda con el sendFile del index):
+
+app.get('/encuesta', encuestaController.mostrarFormulario);
+
+   (La ruta /admin/asistencia NO va acá — ya la sumamos directo en
+   admin.routes.js para que use authMiddleware correctamente, ver
+   CAMBIOS_ADMIN_ROUTES.txt)
+
+════════════════════════════════════════════════════════════════════════
+Todo el resto de tu app.js queda exactamente igual.
+════════════════════════════════════════════════════════════════════════

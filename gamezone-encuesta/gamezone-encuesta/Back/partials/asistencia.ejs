@@ -1,0 +1,47 @@
+<%- include('header', { titulo: 'Asistencia — Encuestas', usuario: usuario }) %>
+
+<main class="container admin-container">
+  <h1 class="titulo-pagina">Asistencia — Encuestas de clientes</h1>
+  <p class="subtitulo-pagina">Listado completo de encuestas de satisfacción recibidas.</p>
+
+  <div class="panel-card">
+    <% if (encuestas.length === 0) { %>
+      <p class="sin-datos">Todavía no se recibió ninguna encuesta.</p>
+    <% } else { %>
+      <table class="tabla-admin">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Email</th>
+            <th>Puntuación</th>
+            <th>Opinión</th>
+            <th>Acepta contacto</th>
+            <th>Imagen</th>
+            <th>Fecha</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% encuestas.forEach((e, i) => { %>
+            <tr>
+              <td><%= i + 1 %></td>
+              <td><%= e.email %></td>
+              <td><span class="badge-puntuacion"><%= e.puntuacion %>/10</span></td>
+              <td class="celda-opinion"><%= e.opinion %></td>
+              <td><%= e.acepta_contacto ? 'Sí' : 'No' %></td>
+              <td>
+                <% if (e.imagen) { %>
+                  <a href="/uploads/<%= e.imagen %>" target="_blank">Ver imagen</a>
+                <% } else { %>
+                  —
+                <% } %>
+              </td>
+              <td><%= new Date(e.fecha).toLocaleString('es-AR') %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } %>
+  </div>
+</main>
+
+<%- include('footer') %>

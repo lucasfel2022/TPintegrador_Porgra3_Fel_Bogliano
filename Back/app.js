@@ -27,11 +27,15 @@ const productosRouter = require('./src/routes/productos.routes');
 const ventasRouter    = require('./src/routes/ventas.routes');
 const usuariosRouter  = require('./src/routes/usuarios.routes');
 const adminRouter     = require('./src/routes/admin.routes');
+const encuestasRouter    = require('./src/routes/encuestas.routes');
+const encuestaController = require('./src/controllers/encuestaController');
 
 app.use('/api/productos', productosRouter);
 app.use('/api/ventas',    ventasRouter);
 app.use('/api/usuarios',  usuariosRouter);
 app.use('/admin',         adminRouter);
+app.use('/api/encuestas', encuestasRouter);
+app.get('/encuesta', encuestaController.mostrarFormulario);
 
 // Ruta raíz → frontend
 app.get('/', (req, res) => {
